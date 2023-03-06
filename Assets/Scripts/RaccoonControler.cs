@@ -15,8 +15,8 @@ public class RaccoonControler : MonoBehaviour
     
     float velocidadH = 0;
     float velocidadV = 0;
-    int velocidadlineal = 2;
-    int velocidadangular = 2;
+    float velocidadlineal = 0.2f;
+    float velocidadangular = 0.2f;
     int fuerzasalto = 5;
     Quaternion myrotacion = new Quaternion();
     Vector3 direccion = new Vector3();
@@ -39,7 +39,7 @@ public class RaccoonControler : MonoBehaviour
         velocidadH = Input.GetAxis("Horizontal");
         velocidadV = Input.GetAxis("Vertical");
         direccion.x = -velocidadV;
-        direccion.z = velocidadH;
+        direccion.z = -velocidadH;
 
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -56,15 +56,15 @@ public class RaccoonControler : MonoBehaviour
         }
 
         //Movimiento  sin fisicas
-        //El objecto se va teletransportando , si es Kinematico ignora todas las colisiones
-       transform.Translate((direccion) * velocidadlineal*Time.deltaTime);
-     
+        //El objecto se va teletransportando a grandes velocidades puede llegar a  ignorar todas las colisiones
+      /*
+        transform.Translate((direccion) * velocidadlineal*Time.deltaTime);
         transform.Rotate(0, direccion.z * velocidadangular, 0);
         Quaternion rot = transform.rotation;
         rot.x = 0;
         rot.z = 0;
         transform.rotation = rot;
-
+      */
     }
 
     void FixedUpdate()
@@ -85,11 +85,19 @@ public class RaccoonControler : MonoBehaviour
 
         //movimiento por propiedades fisicas
         //podemos cambiar la velocidad y la rotacion del rigidbody directamente
-         /*   
-          rb.velocity = transform.right * direccion.x*velocidadlineal;
-         transform.Rotate(0, direccion.z * velocidadangular,0);
-       */
+        /*   
+         rb.velocity = transform.right * direccion.x*velocidadlineal;
+        transform.Rotate(0, direccion.z * velocidadangular,0);
+      */
 
+        //Translate rigidbodyversion
+        // A grandes velocidades puede llegar a ignorar todas las colisiones
+        rb.MovePosition(transform.position + transform.right*(direccion.x) * velocidadlineal);
+        Quaternion rot = transform.rotation;
+        rot.x = 0;
+        rot.z = 0;
+        rot.y += direccion.normalized.z * velocidadangular;
+        rb.MoveRotation(rot.normalized);
 
        
     }
